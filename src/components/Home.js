@@ -4,7 +4,7 @@ import React, { useEffect, useState, useRef } from "react";
 import Chat from "./Chat";
 import styles from "./Home.module.css";
 
-const PEER_ADDRESS = "0x7E0b0363404751346930AF92C80D1fef932Cc48a";
+//const PEER_ADDRESS = "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a";
 
 export default function Home() {
   const [messages, setMessages] = useState(null);
@@ -13,6 +13,9 @@ export default function Home() {
   const [signer, setSigner] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const [isOnNetwork, setIsOnNetwork] = useState(false);
+  const [peerAddress, setPeerAddress] = useState("");
+  const [reciepent, setreciepent] = useState(false);
+
 
   // Function to load the existing messages in a conversation
   const newConversation = async function (xmtp_client, addressTo) {
@@ -35,7 +38,7 @@ export default function Home() {
     // Create the XMTP client
     const xmtp = await Client.create(signer, { env: "production" });
     //Create or load conversation with Gm bot
-    newConversation(xmtp, PEER_ADDRESS);
+    newConversation(xmtp, peerAddress);
     // Set the XMTP client in state for later use
     setIsOnNetwork(!!xmtp.address);
     //Set the client in the ref
@@ -83,11 +86,28 @@ export default function Home() {
       streamMessages();
     }
   }, [messages, isConnected, isOnNetwork]);
+  const handleInputChange = (event) => {
+    setPeerAddress(event.target.value);
+    setreciepent(true);
+  };
 
   return (
     <div className={styles.Home}>
       {/* Display the ConnectWallet component if not connected */}
-      {!isConnected && (
+      {!reciepent && !isConnected && !isOnNetwork && (
+      <div>
+               <input
+          type="text"
+          className={styles.inputField}
+          onChange={handleInputChange}
+          
+          placeholder="Type recepient address here "
+        />
+       
+      </div>
+
+      )}
+      {!isConnected && reciepent && (
         <div className={styles.walletBtn}>
           <button onClick={connectWallet} className={styles.btnXmtp}>
             Connect Wallet
@@ -104,11 +124,13 @@ export default function Home() {
         </div>
       )}
       {/* Render the Chat component if connected, initialized, and messages exist */}
-      {isConnected && isOnNetwork && messages && (
+
+      {isConnected && isOnNetwork && messages && reciepent && (
         <Chat
           client={clientRef.current}
           conversation={convRef.current}
           messageHistory={messages}
+          recieverAddress={peerAddress}
         />
       )}
     </div>

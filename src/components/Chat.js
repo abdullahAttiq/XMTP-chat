@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styles from "./Chat.module.css";
 
-function Chat({ client, messageHistory, conversation }) {
+function Chat({ client, messageHistory, conversation,recieverAddress }) {
   const [inputValue, setInputValue] = useState("");
 
   // Function to handle sending a message
@@ -32,7 +32,7 @@ function Chat({ client, messageHistory, conversation }) {
             className="messageItem"
             title="Click to log this message to the console">
             <strong>
-              {message.senderAddress === client.address ? "You" : "Bot"}:
+              {message.senderAddress === client.address ? "You" : recieverAddress}:
             </strong>
             <span>{message.content}</span>
             <span className="date"> ({message.sent.toLocaleTimeString()})</span>
